@@ -88,6 +88,7 @@ impl Scanner<'_> {
                         self.add_token(TokenType::Slash, None)
                     }
                 }
+                '0'..='9' => self.number(),
                 ' ' => {}
                 '\r' => {}
                 '\t' => {}
@@ -98,6 +99,21 @@ impl Scanner<'_> {
         } else {
             todo!("handle this better?")
         }
+    }
+
+    fn number(&mut self) {
+        while self.peek().is_digit(10) {
+            self.advance();
+        }
+        if self.peek() == '.' && self.peek_next().is_digit(10) {
+            self.advance();
+            while self.peek().is_digit(10) {
+                self.advance();
+            }
+        }
+        // TODO: this is a string
+        let value = &self.source[self.start..self.current];
+        self.add_token(TokenType::Number, Some(String::from(value)))
     }
 
     fn string(&mut self) {
@@ -119,6 +135,13 @@ impl Scanner<'_> {
 
     fn peek(&mut self) -> char {
         match self.source.chars().nth(self.current) {
+            Some(sc) => sc,
+            None => '\0',
+        }
+    }
+
+    fn peek_next(&self) -> char {
+        match self.source.chars().nth(self.current + 1) {
             Some(sc) => sc,
             None => '\0',
         }
