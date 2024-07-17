@@ -74,8 +74,20 @@ impl Scanner<'_> {
                         self.add_token(TokenType::Greater, None)
                     }
                 }
-
-                '\n' => {}
+                '/' => {
+                    if self.match_char('/') {
+                        // TODO: maybe add a token if we care about comments
+                        while self.peek() != '\n' {
+                            self.advance();
+                        }
+                    } else {
+                        self.add_token(TokenType::Slash, None)
+                    }
+                }
+                ' ' => {}
+                '\r' => {}
+                '\t' => {}
+                '\n' => self.line += 1,
                 _ => println!("Unexpected character at {}:{}", self.line, self.current),
             }
         } else {
@@ -83,10 +95,16 @@ impl Scanner<'_> {
         }
     }
 
+    fn peek(&mut self) -> char {
+        match self.source.chars().nth(self.current) {
+            Some(sc) => sc,
+            None => '\0',
+        }
+    }
+
     fn match_char(&mut self, c: char) -> bool {
         match self.source.chars().nth(self.current) {
             Some(sc) => {
-                println!("{}, {}", sc, c);
                 self.current += 1;
                 sc == c
             }
