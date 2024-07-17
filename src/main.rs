@@ -1,3 +1,5 @@
+mod scanner;
+
 use std::{
     env, fs,
     io::{stdin, stdout, Write},
@@ -35,5 +37,6 @@ fn run_file(fname: &String) -> anyhow::Result<()> {
 }
 
 fn run(program: &String) -> anyhow::Result<()> {
-    todo!("take the program and run it")
+    let sc = scanner::Scanner::new(program);
+    sc.scan_tokens()
 }
