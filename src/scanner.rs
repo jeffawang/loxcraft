@@ -108,6 +108,8 @@ impl Scanner<'_> {
             self.advance();
         }
         if self.is_at_end() {
+            // TODO: handle this better
+            eprintln!("Unterminated string.");
             return;
         }
         self.advance();
