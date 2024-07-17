@@ -23,13 +23,17 @@ impl Scanner<'_> {
 
     pub fn scan_tokens(&mut self) -> anyhow::Result<&Vec<Token>> {
         // TODO(jw): could this panic?
-        while self.current < self.source.len() {
+        while !self.is_at_end() {
             self.start = self.current;
             self.scan_token();
         }
         self.add_token(TokenType::EOF, None);
 
         Ok(&self.tokens)
+    }
+
+    fn is_at_end(&self) -> bool {
+        self.current >= self.source.len()
     }
 
     fn scan_token(&mut self) {
@@ -87,12 +91,28 @@ impl Scanner<'_> {
                 ' ' => {}
                 '\r' => {}
                 '\t' => {}
+                '"' => self.string(),
                 '\n' => self.line += 1,
                 _ => println!("Unexpected character at {}:{}", self.line, self.current),
             }
         } else {
             todo!("handle this better?")
         }
+    }
+
+    fn string(&mut self) {
+        while self.peek() != '"' && !self.is_at_end() {
+            if self.peek() == '\n' {
+                self.line += 1;
+            }
+            self.advance();
+        }
+        if self.is_at_end() {
+            return;
+        }
+        self.advance();
+        let value = &self.source[self.start + 1..self.current - 1];
+        self.add_token(TokenType::String, Some(String::from(value)))
     }
 
     fn peek(&mut self) -> char {
