@@ -1,4 +1,7 @@
-use std::{env, fs, io::stdin};
+use std::{
+    env, fs,
+    io::{stdin, stdout, Write},
+};
 
 use anyhow::bail;
 
@@ -15,6 +18,8 @@ fn main() -> anyhow::Result<()> {
 fn run_prompt() -> anyhow::Result<()> {
     let mut line: String = String::new();
     loop {
+        print!("> ");
+        stdout().flush()?;
         match stdin().read_line(&mut line) {
             Ok(_) => {
                 let line = std::mem::take(&mut line);
