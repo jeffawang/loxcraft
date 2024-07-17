@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, fs, io::stdin};
 
 use anyhow::bail;
 
@@ -13,9 +13,22 @@ fn main() -> anyhow::Result<()> {
 }
 
 fn run_prompt() -> anyhow::Result<()> {
-    todo!("Reads and interprets from stdin")
+    let mut line: String = String::new();
+    loop {
+        match stdin().read_line(&mut line) {
+            Ok(_) => {
+                let line = std::mem::take(&mut line);
+                run(&line)
+            }
+            Err(e) => Err(e)?,
+        }?
+    }
 }
 
-fn run_file(_fname: &String) -> anyhow::Result<()> {
-    todo!("Reads and interprets lox from the passed in file")
+fn run_file(fname: &String) -> anyhow::Result<()> {
+    run(&fs::read_to_string(fname)?)
+}
+
+fn run(program: &String) -> anyhow::Result<()> {
+    todo!("take the program and run it")
 }
