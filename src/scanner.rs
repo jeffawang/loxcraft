@@ -94,10 +94,48 @@ impl Scanner<'_> {
                 '\t' => {}
                 '"' => self.string(),
                 '\n' => self.line += 1,
+                '_' | 'a'..='z' | 'A'..='Z' => self.identifier(),
                 _ => println!("Unexpected character at {}:{}", self.line, self.current),
             }
         } else {
             todo!("handle this better?")
+        }
+    }
+
+    fn identifier(&mut self) {
+        while Self::is_identifier_char(self.peek()) && !self.is_at_end() {
+            self.advance();
+        }
+        let id = &self.source[self.start..self.current];
+        self.add_token(Self::identifier_tokentype(id), None)
+    }
+
+    fn identifier_tokentype(id: &str) -> TokenType {
+        match id {
+            "and" => TokenType::And,
+            "class" => TokenType::Class,
+            "else" => TokenType::Else,
+            "false" => TokenType::False,
+            "for" => TokenType::For,
+            "fun" => TokenType::Fun,
+            "if" => TokenType::If,
+            "nil" => TokenType::Nil,
+            "or" => TokenType::Or,
+            "print" => TokenType::Print,
+            "return" => TokenType::Return,
+            "super" => TokenType::Super,
+            "this" => TokenType::This,
+            "true" => TokenType::True,
+            "var" => TokenType::Var,
+            "while" => TokenType::While,
+            _ => TokenType::Identifier,
+        }
+    }
+
+    fn is_identifier_char(c: char) -> bool {
+        match c {
+            'a'..='z' | 'A'..='Z' | '_' | '0'..='9' => true,
+            _ => false,
         }
     }
 
