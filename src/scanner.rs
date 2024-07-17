@@ -29,14 +29,11 @@ impl Scanner<'_> {
         }
         self.add_token(TokenType::EOF, None);
 
-        println!("Source: {}", self.source);
         Ok(&self.tokens)
     }
 
     fn scan_token(&mut self) {
         if let Some(c) = self.advance() {
-            println!("Got {}", c);
-            self.current += 1;
             match c {
                 '(' => self.add_token(TokenType::LeftParen, None),
                 ')' => self.add_token(TokenType::RightParen, None),
@@ -48,15 +45,58 @@ impl Scanner<'_> {
                 '+' => self.add_token(TokenType::Plus, None),
                 ';' => self.add_token(TokenType::Semicolon, None),
                 '*' => self.add_token(TokenType::Star, None),
-                _ => {}
+                // TODO: this is so verbose :/
+                '!' => {
+                    if self.match_char('=') {
+                        self.add_token(TokenType::BangEqual, None)
+                    } else {
+                        self.add_token(TokenType::Bang, None)
+                    }
+                }
+                '=' => {
+                    if self.match_char('=') {
+                        self.add_token(TokenType::EqualEqual, None)
+                    } else {
+                        self.add_token(TokenType::Equal, None)
+                    }
+                }
+                '<' => {
+                    if self.match_char('=') {
+                        self.add_token(TokenType::LessEqual, None)
+                    } else {
+                        self.add_token(TokenType::Less, None)
+                    }
+                }
+                '>' => {
+                    if self.match_char('=') {
+                        self.add_token(TokenType::GreaterEqual, None)
+                    } else {
+                        self.add_token(TokenType::Greater, None)
+                    }
+                }
+
+                '\n' => {}
+                _ => println!("Unexpected character at {}:{}", self.line, self.current),
             }
         } else {
             todo!("handle this better?")
         }
     }
 
+    fn match_char(&mut self, c: char) -> bool {
+        match self.source.chars().nth(self.current) {
+            Some(sc) => {
+                println!("{}, {}", sc, c);
+                self.current += 1;
+                sc == c
+            }
+            None => false,
+        }
+    }
+
     fn advance(&mut self) -> Option<char> {
-        self.source.chars().nth(self.current as usize)
+        self.current += 1;
+        self.source.chars().nth(self.current - 1)
     }
 
     fn add_token(&mut self, token_type: TokenType, literal: Option<String>) {
