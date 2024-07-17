@@ -1,0 +1,10 @@
+class Hi {
+  init(stuff) {
+    self.stuff = 12.34;
+    self.hello = "world";
+  }
+}
+
+fun greet(name) {
+  print "hello " + name
+}
