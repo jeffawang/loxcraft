@@ -21,6 +21,8 @@ pub(crate) enum TokenType {
     // Keywords
     And, Class, Else, False, Fun, For, If, Nil, Or,
     Print, Return, Super, This, True, Var, While,
+
+    EOF
 }
 
 impl fmt::Display for TokenType {
@@ -29,21 +31,21 @@ impl fmt::Display for TokenType {
     }
 }
 
-struct Token {
+pub(crate) struct Token<'a> {
     token_type: TokenType,
-    lexeme: String,
-    literal: String,
-    line: u32,
+    lexeme: &'a str,
+    literal: Option<String>,
+    line: usize,
 }
 
-impl fmt::Display for Token {
+impl fmt::Display for Token<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} {} {}", self.token_type, self.lexeme, self.literal)
+        write!(f, "{} {} {:?}", self.token_type, self.lexeme, self.literal)
     }
 }
 
-impl Token {
-    fn new(token_type: TokenType, lexeme: String, literal: String, line: u32) -> Token {
+impl Token<'_> {
+    pub fn new(token_type: TokenType, lexeme: &str, literal: Option<String>, line: usize) -> Token {
         Token {
             token_type,
             lexeme,

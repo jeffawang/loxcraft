@@ -38,6 +38,9 @@ fn run_file(fname: &String) -> anyhow::Result<()> {
 }
 
 fn run(program: &String) -> anyhow::Result<()> {
-    let sc = scanner::Scanner::new(program);
-    sc.scan_tokens()
+    let mut sc = scanner::Scanner::new(program);
+    for t in sc.scan_tokens()?.iter() {
+        println!("{}", t);
+    }
+    Ok(())
 }
